@@ -184,10 +184,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-34
-151
-206
-184
+29
+235
+201
+268
 pfish-energy-gained
 pfish-energy-gained
 0
@@ -214,10 +214,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-35
-214
-261
-247
+120
+301
+346
+334
 pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
@@ -229,10 +229,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-35
-284
-221
-317
+76
+363
+262
+396
 pfish-reproduction-chance
 pfish-reproduction-chance
 0
