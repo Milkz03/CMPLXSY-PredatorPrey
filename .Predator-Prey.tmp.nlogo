@@ -37,11 +37,12 @@ to setup
   ]
 
   ; barracudas look bluish silver or greenish silver imo
-  create-barracudas 5 [
-    set shape "fish"
+  create-barracudas initial-number-barracuda [
+    ; set shape "fish"
     set color 98
     set size 5
     set label-color red - 2
+    set energy random (10)
     setxy random-xcor random-ycor
   ]
 end
@@ -57,13 +58,36 @@ end
 
 to go
   regrow-algae
-  ask turtles
+  ask parrotFishes
   [
     ifelse coin-flip? [right random 45] [left random 45] ; fish cant make 180 turns right???
     forward random max-forward
   ]
+
+  ask barracudas [
+    let b self
+    let p nobody
+
+    ask neighbors [
+      ask parrotFishes-here [
+        set p self
+        show p
+      ]
+    ]
+
+    ifelse p != nobody [
+      face p
+    ] [
+      ifelse coin-flip? [right random 45] [left random 45]
+    ]
+
+    forward random max-forward
+  ]
+
   parrot-fish-live
   parrot-fish-reproduce
+  barracuda-live
+  ; barracuda-reproduce
   tick
 end
 
@@ -111,6 +135,19 @@ to parrot-fish-live
     ]
 
     set energy (energy - 1)
+    if energy <= 0 [die]
+  ]
+end
+
+to barracuda-live
+  ask barracudas
+  [
+    let eaten (count parrotFishes-here)
+    ask parrotFishes-here [
+      die
+    ]
+
+    set energy (energy + eaten * barracuda-energy-gained - 1)
     if energy <= 0 [die]
   ]
 end
@@ -208,10 +245,10 @@ NIL
 1
 
 SLIDER
-35
-98
-207
-131
+37
+116
+209
+149
 initial-number-pfish
 initial-number-pfish
 0
@@ -223,10 +260,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-236
-96
-408
-129
+307
+24
+479
+57
 max-forward
 max-forward
 0
@@ -238,40 +275,40 @@ NIL
 HORIZONTAL
 
 SLIDER
-34
-151
-206
-184
+35
+156
+207
+189
 pfish-energy-gained
 pfish-energy-gained
 0
 100
-20.0
+21.0
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-236
-143
-408
-176
+306
+64
+478
+97
 regrowth-rate-max
 regrowth-rate-max
 0
 500
-70.0
+210.0
 10
 1
 NIL
 HORIZONTAL
 
 SLIDER
-35
-214
-261
-247
+36
+199
+262
+232
 pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
@@ -284,29 +321,14 @@ HORIZONTAL
 
 SLIDER
 35
-284
+246
 221
-317
+279
 pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-20.0
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-220
-512
-393
-545
-algae-density
-algae-density
-0
-100
-23.0
+0.0
 1
 1
 NIL
@@ -337,6 +359,66 @@ clusters
 1
 10
 5.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+370
+114
+556
+148
+initial-number-barracuda
+initial-number-barracuda
+0
+100
+81.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+362
+156
+555
+190
+barracuda-energy-gained
+barracuda-energy-gained
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+287
+197
+555
+231
+barracuda-reproduce-energy-threshold
+barracuda-reproduce-energy-threshold
+0
+100
+22.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+330
+237
+556
+271
+barracuda-reproduction-chance
+barracuda-reproduction-chance
+0
+100
+50.0
 1
 1
 NIL
