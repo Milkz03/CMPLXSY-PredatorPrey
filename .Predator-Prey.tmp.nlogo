@@ -1,5 +1,10 @@
 patches-own [ is-algae? regrowth ]
 turtles-own [ energy ] ; parrot fish and barra
+globals [
+  parrotfish-population
+  barracuda-population
+  algae-count
+]
 
 breed [ parrotFishes parrotFish ]
 breed [ barracudas barracuda ]
@@ -14,6 +19,7 @@ to setup
     set regrowth regrowth-rate-max
   ]
 
+  set algae-count 0
   let centroid patch 0 0
   repeat clusters [
     let tmp patch random-pxcor random-pycor
@@ -38,11 +44,11 @@ to setup
 
   ; barracudas look bluish silver or greenish silver imo
   create-barracudas initial-number-barracuda [
-    ; set shape "fish"
+    set shape "fish"
     set color 98
     set size 5
     set label-color red - 2
-    set energy random (10)
+    set energy random (20)
     setxy random-xcor random-ycor
   ]
 end
@@ -71,7 +77,6 @@ to go
     ask neighbors [
       ask parrotFishes-here [
         set p self
-        show p
       ]
     ]
 
@@ -84,11 +89,21 @@ to go
     forward random max-forward
   ]
 
+  set algae-count 0
+  ask patches [
+    if pcolor = green [
+      set algae-count (algae-count + 1)
+    ]
+  ]
   parrot-fish-live
   parrot-fish-reproduce
   barracuda-live
-  ; barracuda-reproduce
+  barracuda-reproduce
   tick
+end
+
+to step
+  go
 end
 
 to populate-cluster [cluster]
@@ -101,14 +116,14 @@ to populate-cluster [cluster]
     (foreach xs [
       [x] -> (
         (foreach ys [
-          [y] ->
-            ask (patch x y) [
-              let radius (distance (cluster))
+          [y] -> ask (patch x y) [
+            let radius (distance (cluster))
               if random-float 1 < (1 - (radius - 1) / this-radius) [
-                set pcolor green
-                set is-algae? true
-              ]
+              set pcolor green
+              set is-algae? true
+              set algae-count (algae-count + 1)
             ]
+          ]
         ])
       )
     ])
@@ -118,7 +133,7 @@ end
 to regrow-algae
   ask patches
   [
-    ifelse is-algae? and regrowth <= 0 [
+    ifelse is-algae? and regrowth = 0 [
       set pcolor green
     ] [set regrowth regrowth - 1]
   ]
@@ -163,10 +178,35 @@ to parrot-fish-reproduce
       if potential-mate != nobody and random 100 < pfish-reproduction-chance
       [
         ; Create a child fish
-        hatch 1
+        hatch-parrotFishes 1
         [
           set color 126 ; magenta ish
           set size 2
+          set energy (energy + [energy] of potential-mate) / 3 ; share energy between parents and child
+        ]
+
+        ; Decrease the energy of the parent fish
+        set energy (energy - (energy / 3))
+        ask potential-mate [set energy (energy - (energy / 3))]
+      ]
+    ]
+  ]
+end
+
+to barracuda-reproduce
+  ask barracudas
+  [
+    if energy > barracuda-reproduce-energy-threshold
+    [
+      let potential-mate one-of other barracudas with [energy > barracuda-reproduce-energy-threshold]
+
+      if potential-mate != nobody and random 100 < barracuda-reproduction-chance
+      [
+        ; Create a child fish
+        hatch-barracudas 1
+        [
+          set color 98
+          set size 5
           set energy (energy + [energy] of potential-mate) / 3 ; share energy between parents and child
         ]
 
@@ -211,10 +251,10 @@ ticks
 30.0
 
 BUTTON
-54
 34
-120
-67
+37
+100
+70
 setup
 setup
 NIL
@@ -228,10 +268,10 @@ NIL
 1
 
 BUTTON
-190
-32
-253
-65
+181
+40
+244
+73
 go
 go
 T
@@ -283,7 +323,7 @@ pfish-energy-gained
 pfish-energy-gained
 0
 100
-21.0
+20.0
 1
 1
 NIL
@@ -298,7 +338,7 @@ regrowth-rate-max
 regrowth-rate-max
 0
 500
-210.0
+100.0
 10
 1
 NIL
@@ -313,7 +353,7 @@ pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
 100
-50.0
+30.0
 1
 1
 NIL
@@ -328,7 +368,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-0.0
+10.0
 1
 1
 NIL
@@ -373,7 +413,7 @@ initial-number-barracuda
 initial-number-barracuda
 0
 100
-81.0
+100.0
 1
 1
 NIL
@@ -388,7 +428,7 @@ barracuda-energy-gained
 barracuda-energy-gained
 0
 100
-100.0
+40.0
 1
 1
 NIL
@@ -403,7 +443,7 @@ barracuda-reproduce-energy-threshold
 barracuda-reproduce-energy-threshold
 0
 100
-22.0
+15.0
 1
 1
 NIL
@@ -418,11 +458,115 @@ barracuda-reproduction-chance
 barracuda-reproduction-chance
 0
 100
-50.0
+10.0
 1
 1
 NIL
 HORIZONTAL
+
+MONITOR
+277
+367
+357
+413
+NIL
+algae-count
+17
+1
+11
+
+PLOT
+1114
+25
+1314
+175
+Algae Count
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+false
+"" ""
+PENS
+"default" 1.0 0 -16777216 true "" "plot algae-count"
+
+MONITOR
+271
+442
+381
+488
+NIL
+count barracudas
+17
+1
+11
+
+MONITOR
+281
+500
+399
+546
+NIL
+count parrotFishes
+17
+1
+11
+
+PLOT
+1117
+206
+1317
+356
+Fish Population
+NIL
+NIL
+0.0
+10.0
+0.0
+10.0
+true
+true
+"" ""
+PENS
+"barracudas" 1.0 0 -2139308 true "" "plot count barracudas"
+"parrot fishes" 1.0 0 -14454117 true "" "plot count parrotFishes"
+
+BUTTON
+108
+38
+172
+72
+NIL
+step
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+110
+77
+174
+111
+NIL
+done
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
