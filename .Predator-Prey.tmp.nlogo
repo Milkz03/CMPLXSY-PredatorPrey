@@ -1,4 +1,4 @@
-patches-own [regrowth]
+patches-own [ is-algae? regrowth ]
 turtles-own [ energy ] ; parrot fish and barra
 
 breed [ parrotFishes parrotFish ]
@@ -10,7 +10,8 @@ to setup
   ask patches
   [
     set pcolor one-of [blue brown blue] ;more water than algae
-    if pcolor = blue [set regrowth regrowth-rate-max] ;30 days for algae to grow
+    if pcolor = blue [set regrowth regrowth-rate-max set is-algae? false] ;30 days for algae to grow
+    if pcolor = brown [ set is-algae? true ]
   ]
 
   create-parrotFishes initial-number-pfish
@@ -24,7 +25,7 @@ to setup
   ]
 
   ; barracudas look bluish silver or greenish silver imo
-  create-barracudas 0 [
+  create-barracudas 5 [
     set shape "fish"
     set color 98
     set size 5
@@ -48,7 +49,7 @@ end
 to regrow-algae
   ask patches
   [
-    ifelse regrowth <= 0 [
+    ifelse is-algae? and regrowth <= 0 [
       set pcolor brown
     ] [set regrowth regrowth - 1]
   ]
@@ -62,7 +63,12 @@ to parrot-fish-live
       set pcolor blue
       set energy (energy + pfish-energy-gained)
       set regrowth regrowth-rate-max
+
+      ask patch  [
+        set regrowth regrowth-max
+      ]
     ]
+
     set energy (energy - 1)
     if energy <= 0 [die]
   ]
@@ -169,7 +175,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-44.0
+13.0
 1
 1
 NIL
@@ -229,7 +235,7 @@ pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
 100
-50.0
+100.0
 1
 1
 NIL
@@ -244,7 +250,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-3.0
+1.0
 1
 1
 NIL
