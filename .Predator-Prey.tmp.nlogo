@@ -9,8 +9,7 @@ to setup
   reset-ticks
   ask patches
   [
-    set pcolor one-of [blue brown blue] ;more water than algae
-    ifelse random 100 < algae-density [ set  ]
+    ifelse random 100 < algae-density [ set pcolor brown ] [ set pcolor blue]
     if pcolor = blue [set regrowth regrowth-rate-max set is-algae? false] ;30 days for algae to grow
     if pcolor = brown [ set is-algae? true ]
   ]
@@ -105,11 +104,11 @@ end
 GRAPHICS-WINDOW
 565
 25
-1002
-463
+1605
+1066
 -1
 -1
-13.0
+8.0
 1
 10
 1
@@ -119,10 +118,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--16
-16
--16
-16
+-64
+64
+-64
+64
 0
 0
 1
@@ -172,7 +171,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-6.0
+100.0
 1
 1
 NIL
@@ -232,7 +231,7 @@ pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
 100
-100.0
+16.0
 1
 1
 NIL
@@ -247,7 +246,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-0.0
+100.0
 1
 1
 NIL
@@ -257,12 +256,12 @@ SLIDER
 220
 512
 393
-546
+545
 algae-density
 algae-density
 0
 100
-50.0
+23.0
 1
 1
 NIL
