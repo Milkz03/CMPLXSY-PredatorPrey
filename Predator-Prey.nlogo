@@ -9,7 +9,7 @@ to setup
   reset-ticks
   ask patches
   [
-    set pcolor one-of [blue brown blue] ;more water than algae
+    ifelse random 100 < algae-density [ set pcolor brown ] [ set pcolor blue]
     if pcolor = blue [set regrowth regrowth-rate-max set is-algae? false] ;30 days for algae to grow
     if pcolor = brown [ set is-algae? true ]
   ]
@@ -63,10 +63,6 @@ to parrot-fish-live
       set pcolor blue
       set energy (energy + pfish-energy-gained)
       set regrowth regrowth-rate-max
-
-      ask patch xcor ycor [
-        set regrowth regrowth-rate-max
-      ]
     ]
 
     set energy (energy - 1)
@@ -175,7 +171,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-13.0
+6.0
 1
 1
 NIL
@@ -205,7 +201,7 @@ pfish-energy-gained
 pfish-energy-gained
 0
 100
-66.0
+9.0
 1
 1
 NIL
@@ -220,7 +216,7 @@ regrowth-rate-max
 regrowth-rate-max
 0
 10000
-60.0
+680.0
 10
 1
 NIL
@@ -250,7 +246,22 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-1.0
+0.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+220
+512
+393
+546
+algae-density
+algae-density
+0
+100
+50.0
 1
 1
 NIL
