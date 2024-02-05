@@ -24,6 +24,13 @@ to setup
   ]
 
   ; barracudas look bluish silver or greenish silver imo
+  create-barracudas 0 [
+    set shape "fish"
+    set color 98
+    set size 5
+    set label-color red - 2
+    setxy random-xcor random-ycor
+  ]
 end
 
 to go
@@ -162,7 +169,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-24.0
+44.0
 1
 1
 NIL
@@ -184,10 +191,10 @@ NIL
 HORIZONTAL
 
 SLIDER
-29
-235
-201
-268
+34
+151
+206
+184
 pfish-energy-gained
 pfish-energy-gained
 0
@@ -207,17 +214,17 @@ regrowth-rate-max
 regrowth-rate-max
 0
 10000
-2420.0
+60.0
 10
 1
 NIL
 HORIZONTAL
 
 SLIDER
-120
-301
-346
-334
+35
+214
+261
+247
 pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
@@ -229,15 +236,15 @@ NIL
 HORIZONTAL
 
 SLIDER
-76
-363
-262
-396
+35
+284
+221
+317
 pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-50.0
+3.0
 1
 1
 NIL

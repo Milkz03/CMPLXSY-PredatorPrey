@@ -24,6 +24,13 @@ to setup
   ]
 
   ; barracudas look bluish silver or greenish silver imo
+  create-barracudas 5 [
+    set shape "fish"
+    set color 98
+    set size 5
+    set label-color red - 2
+    setxy random-xcor random-ycor
+  ]
 end
 
 to go
@@ -162,7 +169,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-24.0
+44.0
 1
 1
 NIL
@@ -207,7 +214,7 @@ regrowth-rate-max
 regrowth-rate-max
 0
 10000
-2420.0
+60.0
 10
 1
 NIL
@@ -237,7 +244,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-50.0
+3.0
 1
 1
 NIL
