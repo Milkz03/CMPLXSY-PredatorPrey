@@ -9,9 +9,21 @@ to setup
   reset-ticks
   ask patches
   [
-    ifelse random 100 < algae-density [ set pcolor brown ] [ set pcolor blue]
-    if pcolor = blue [set regrowth regrowth-rate-max set is-algae? false] ;30 days for algae to grow
-    if pcolor = brown [ set is-algae? true ]
+    set pcolor blue
+    set is-algae? false
+    set regrowth regrowth-rate-max
+  ]
+
+  let centroid patch 0 0
+  repeat clusters [
+    let tmp patch random-pxcor random-pycor
+
+    while [is-patch-close? tmp centroid] [
+      set tmp patch random-pxcor random-pycor
+    ]
+
+    populate-cluster tmp
+    set centroid tmp
   ]
 
   create-parrotFishes initial-number-pfish
@@ -34,6 +46,15 @@ to setup
   ]
 end
 
+to-report is-patch-close? [c1 c2]
+  let dist-to-prev 0
+  let dist-to-origin 0
+  ask c1 [
+    set dist-to-prev (distance c2)
+  ]
+  report dist-to-prev <= max-pxcor
+end
+
 to go
   regrow-algae
   ask turtles
@@ -46,11 +67,35 @@ to go
   tick
 end
 
+to populate-cluster [cluster]
+  ask cluster [
+    let this-radius (random-gamma cluster-radius 1)
+
+    let xs (range (pxcor - this-radius) (pxcor + this-radius))
+    let ys (range (pycor - this-radius) (pycor + this-radius))
+
+    (foreach xs [
+      [x] -> (
+        (foreach ys [
+          [y] ->
+            ask (patch x y) [
+              let radius (distance (cluster))
+              if random-float 1 < (1 - (radius - 1) / this-radius) [
+                set pcolor green
+                set is-algae? true
+              ]
+            ]
+        ])
+      )
+    ])
+  ]
+end
+
 to regrow-algae
   ask patches
   [
     ifelse is-algae? and regrowth <= 0 [
-      set pcolor brown
+      set pcolor green
     ] [set regrowth regrowth - 1]
   ]
 end
@@ -58,7 +103,7 @@ end
 to parrot-fish-live
   ask parrotFishes
   [
-    if pcolor = brown
+    if pcolor = green
     [
       set pcolor blue
       set energy (energy + pfish-energy-gained)
@@ -104,8 +149,8 @@ end
 GRAPHICS-WINDOW
 565
 25
-1605
-1066
+1097
+558
 -1
 -1
 8.0
@@ -118,10 +163,10 @@ GRAPHICS-WINDOW
 1
 1
 1
--64
-64
--64
-64
+-32
+32
+-32
+32
 0
 0
 1
@@ -201,7 +246,7 @@ pfish-energy-gained
 pfish-energy-gained
 0
 100
-9.0
+20.0
 1
 1
 NIL
@@ -215,8 +260,8 @@ SLIDER
 regrowth-rate-max
 regrowth-rate-max
 0
-10000
-680.0
+500
+70.0
 10
 1
 NIL
@@ -231,7 +276,7 @@ pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
 100
-16.0
+50.0
 1
 1
 NIL
@@ -246,7 +291,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-100.0
+20.0
 1
 1
 NIL
@@ -262,6 +307,36 @@ algae-density
 0
 100
 23.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+33
+337
+206
+371
+cluster-radius
+cluster-radius
+0
+20
+10.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+59
+402
+232
+436
+clusters
+clusters
+1
+10
+5.0
 1
 1
 NIL
