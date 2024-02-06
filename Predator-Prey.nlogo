@@ -38,7 +38,7 @@ to setup
     set color 126 ; magenta ish
     set size 2
     set label-color blue - 2
-    set energy random (10)
+    set energy random (50)
     setxy random-xcor random-ycor
   ]
 
@@ -48,7 +48,7 @@ to setup
     set color 98
     set size 5
     set label-color red - 2
-    set energy random (20)
+    set energy random (50)
     setxy random-xcor random-ycor
   ]
 end
@@ -71,23 +71,40 @@ to go
   ]
 
   ask barracudas [
-    let b self
-    let p nobody
+  let b self
+  let p nobody
+  let avoidance-distance 5 ; Set the avoidance distance
+  let alignment-radius 30 ; Set the alignment radius
+  let avoidance-angle 10 ; Set the avoidance angle
 
-    ask neighbors [
-      ask parrotFishes-here [
-        set p self
-      ]
+  ask neighbors in-radius alignment-radius [
+    ask parrotFishes-here [
+      set p self
     ]
-
-    ifelse p != nobody [
-      face p
-    ] [
-      ifelse coin-flip? [right random 45] [left random 45]
-    ]
-    set label energy
-    forward random max-forward
   ]
+
+  ifelse p != nobody [
+    face p
+  ] [
+    ; Calculate the average heading of all barracudas within the alignment radius
+    let avg-heading mean [heading] of barracudas in-radius alignment-radius
+
+    ; Check if too close to another barracuda
+    let too-close-barracudas barracudas in-radius avoidance-distance with [distance myself < avoidance-distance]
+
+    ifelse any? too-close-barracudas [
+      ; If too close, avoid the other barracuda
+      let avoid-heading avoid-other-barracuda avg-heading avoidance-angle
+      set heading avoid-heading
+    ] [
+      ; If not too close, face the average heading
+      set heading avg-heading
+    ]
+  ]
+
+  set label energy
+  forward random max-forward
+]
 
   set algae-count 0
   ask patches [
@@ -100,6 +117,12 @@ to go
   barracuda-live
   barracuda-reproduce
   tick
+end
+
+to-report avoid-other-barracuda [target-heading avoidance-angle]
+  let turn-direction 1 ; 1 for right, -1 for left
+  let new-heading target-heading + (turn-direction * avoidance-angle)
+  report new-heading
 end
 
 to step
@@ -313,7 +336,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-100.0
+79.0
 1
 1
 NIL
@@ -388,7 +411,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-10.0
+24.0
 1
 1
 NIL
@@ -433,7 +456,7 @@ initial-number-barracuda
 initial-number-barracuda
 0
 100
-5.0
+10.0
 1
 1
 NIL
@@ -580,7 +603,7 @@ successful-hunt-chance
 successful-hunt-chance
 0
 100
-53.0
+50.0
 1
 1
 NIL
@@ -595,7 +618,7 @@ barracuda-cost-of-living
 barracuda-cost-of-living
 0
 100
-100.0
+1.0
 1
 1
 NIL
@@ -610,7 +633,7 @@ pfish-cost-of-living
 pfish-cost-of-living
 0
 100
-100.0
+1.0
 1
 1
 NIL
