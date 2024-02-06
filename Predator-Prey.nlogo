@@ -85,13 +85,13 @@ to go
     ] [
       ifelse coin-flip? [right random 45] [left random 45]
     ]
-
+    set label energy
     forward random max-forward
   ]
 
   set algae-count 0
   ask patches [
-    if pcolor = green [
+    if pcolor = red [
       set algae-count (algae-count + 1)
     ]
   ]
@@ -119,7 +119,7 @@ to populate-cluster [cluster]
           [y] -> ask (patch x y) [
             let radius (distance (cluster))
               if random-float 1 < (1 - (radius - 1) / this-radius) [
-              set pcolor green
+              set pcolor red
               set is-algae? true
               set algae-count (algae-count + 1)
             ]
@@ -134,7 +134,7 @@ to regrow-algae
   ask patches
   [
     ifelse is-algae? and regrowth = 0 [
-      set pcolor green
+      set pcolor red
     ] [set regrowth regrowth - 1]
   ]
 end
@@ -142,30 +142,50 @@ end
 to parrot-fish-live
   ask parrotFishes
   [
-    if pcolor = green
+    if pcolor = red
     [
       set pcolor blue
       set energy (energy + pfish-energy-gained)
       set regrowth regrowth-rate-max
     ]
 
-    set energy (energy - 1)
+    set energy (energy - pfish-cost-of-living)
     if energy <= 0 [die]
   ]
 end
+
+;to barracuda-live
+;  ask barracudas
+ ; [
+  ;  let eaten (count parrotFishes-here)
+   ; ask parrotFishes-here [
+    ;  die
+    ;]
+
+    ;set energy (energy + eaten * barracuda-energy-gained - 1)
+    ;if energy <= 0 [die]
+;  ]
+;end
 
 to barracuda-live
-  ask barracudas
-  [
-    let eaten (count parrotFishes-here)
-    ask parrotFishes-here [
-      die
-    ]
+  ask barracudas [
+    if any? parrotFishes in-radius 1 [
+      let huntCheck random 100 + 1 < successful-hunt-chance
 
-    set energy (energy + eaten * barracuda-energy-gained - 1)
+      if huntCheck [
+        let eaten 1 ;  one fish
+        ask one-of parrotFishes in-radius 1 [ die ]
+
+        set energy (energy + eaten * barracuda-energy-gained)
+      ]
+    ]
+    set energy (energy - barracuda-cost-of-living)
     if energy <= 0 [die]
   ]
 end
+
+
+
 
 ;when prey eats algae, ask patches[set regrowth 30 set pcolor blue]
 to parrot-fish-reproduce
@@ -226,8 +246,8 @@ end
 GRAPHICS-WINDOW
 565
 25
-1097
-558
+1093
+554
 -1
 -1
 8.0
@@ -378,7 +398,7 @@ SLIDER
 33
 337
 206
-371
+370
 cluster-radius
 cluster-radius
 0
@@ -393,7 +413,7 @@ SLIDER
 59
 402
 232
-436
+435
 clusters
 clusters
 1
@@ -408,12 +428,12 @@ SLIDER
 370
 114
 556
-148
+147
 initial-number-barracuda
 initial-number-barracuda
 0
 100
-100.0
+5.0
 1
 1
 NIL
@@ -423,12 +443,12 @@ SLIDER
 362
 156
 555
-190
+189
 barracuda-energy-gained
 barracuda-energy-gained
 0
 100
-40.0
+30.0
 1
 1
 NIL
@@ -438,7 +458,7 @@ SLIDER
 287
 197
 555
-231
+230
 barracuda-reproduce-energy-threshold
 barracuda-reproduce-energy-threshold
 0
@@ -453,7 +473,7 @@ SLIDER
 330
 237
 556
-271
+270
 barracuda-reproduction-chance
 barracuda-reproduction-chance
 0
@@ -468,7 +488,7 @@ MONITOR
 277
 367
 357
-413
+412
 NIL
 algae-count
 17
@@ -497,7 +517,7 @@ MONITOR
 271
 442
 381
-488
+487
 NIL
 count barracudas
 17
@@ -508,7 +528,7 @@ MONITOR
 281
 500
 399
-546
+545
 NIL
 count parrotFishes
 17
@@ -550,6 +570,51 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+382
+280
+554
+313
+successful-hunt-chance
+successful-hunt-chance
+0
+100
+53.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+384
+333
+558
+366
+barracuda-cost-of-living
+barracuda-cost-of-living
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+34
+290
+206
+323
+pfish-cost-of-living
+pfish-cost-of-living
+0
+100
+100.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
