@@ -16,7 +16,7 @@ to setup
   [
     set pcolor blue
     set is-algae? false
-    set regrowth regrowth-rate-max
+    set regrowth random regrowth-rate-max
   ]
 
   set algae-count 0
@@ -169,7 +169,7 @@ to parrot-fish-live
     [
       set pcolor blue
       set energy (energy + pfish-energy-gained)
-      set regrowth regrowth-rate-max
+      set regrowth random regrowth-rate-max
     ]
 
     set energy (energy - pfish-cost-of-living)
@@ -336,7 +336,7 @@ initial-number-pfish
 initial-number-pfish
 0
 100
-79.0
+80.0
 1
 1
 NIL
@@ -396,7 +396,7 @@ pfish-reproduce-energy-threshold
 pfish-reproduce-energy-threshold
 0
 100
-30.0
+50.0
 1
 1
 NIL
@@ -411,7 +411,7 @@ pfish-reproduction-chance
 pfish-reproduction-chance
 0
 100
-24.0
+34.0
 1
 1
 NIL
@@ -456,7 +456,7 @@ initial-number-barracuda
 initial-number-barracuda
 0
 100
-10.0
+20.0
 1
 1
 NIL
@@ -486,7 +486,7 @@ barracuda-reproduce-energy-threshold
 barracuda-reproduce-energy-threshold
 0
 100
-15.0
+35.0
 1
 1
 NIL
@@ -501,7 +501,7 @@ barracuda-reproduction-chance
 barracuda-reproduction-chance
 0
 100
-10.0
+22.0
 1
 1
 NIL
