@@ -68,7 +68,7 @@ to go
   [
     ifelse coin-flip? [right random 45] [left random 45] ; fish cant make 180 turns right???
     forward random max-forward
-    set label precision energy 1
+  set label precision energy 1
   ]
 
   ask barracudas [
